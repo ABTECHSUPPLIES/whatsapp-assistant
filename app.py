@@ -21,7 +21,7 @@ logging.basicConfig(
 )
 
 # Flask app setup
-app = Flask(__name__)
+app = Flask(__name__)  # Ensure this matches the filename 'app.py'
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
 
 # Load OpenAI API key
@@ -298,7 +298,7 @@ def send_whatsapp_message(to: str, body: str) -> None:
 
 # Initialize session context per user
 def get_user_context(sender_number: str) -> List[Dict[str, str]]:
-    if sender_number not in session:  # Fixed typo: 'sender enjoys_number' to 'sender_number'
+    if sender_number not in session:
         session[sender_number] = []
     return session[sender_number]
 
@@ -515,5 +515,7 @@ def webhook():
 
     return jsonify({"status": "success", "response": response_message})
 
+# For Render: Use environment-provided port
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.getenv("PORT", 5000))  # Render sets PORT, default to 5000 locally
+    app.run(host="0.0.0.0", port=port, debug=os.getenv("FLASK_DEBUG", "False") == "True")
